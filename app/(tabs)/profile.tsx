@@ -1,9 +1,28 @@
-import { Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, Text, View } from 'react-native';
+
+import { useAuth } from '../../src/context/AuthContext';
 
 export default function ProfileScreen() {
+  const { user, logout } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    router.replace('/(auth)/login');
+  }
+
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-lg text-gray-700">My Profile / Settings — Phase 1 ও 6-এ implement হবে</Text>
+    <View className="flex-1 items-center justify-center bg-white px-6">
+      <Text className="mb-1 text-xl font-semibold text-gray-900">{user?.name}</Text>
+      <Text className="mb-8 text-gray-500">{user?.email}</Text>
+
+      <Pressable onPress={handleLogout} className="rounded-lg border border-red-300 px-6 py-3">
+        <Text className="font-medium text-red-600">Logout</Text>
+      </Pressable>
+
+      <Text className="mt-8 text-sm text-gray-400">
+        Bio/avatar এডিট, article count, follower count — Phase 6-এ যোগ হবে
+      </Text>
     </View>
   );
 }

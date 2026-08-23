@@ -1,6 +1,18 @@
 import { Redirect } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 
-// Phase 1-এ এখানে auth state চেক করে (auth) বা (tabs)-এ redirect করা হবে।
+import { useAuth } from '../src/context/AuthContext';
+
 export default function Index() {
-  return <Redirect href="/(auth)/login" />;
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  return <Redirect href={user ? '/(tabs)/home' : '/(auth)/login'} />;
 }
