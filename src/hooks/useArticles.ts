@@ -1,12 +1,13 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { listArticlesRequest } from '../api/articles';
+import { ArticleFilters, listArticlesRequest } from '../api/articles';
 
-export function useArticles() {
+export function useArticles(filters: ArticleFilters = {}, options: { enabled?: boolean } = {}) {
   return useInfiniteQuery({
-    queryKey: ['articles'],
-    queryFn: ({ pageParam }) => listArticlesRequest(pageParam),
+    queryKey: ['articles', filters],
+    queryFn: ({ pageParam }) => listArticlesRequest(pageParam, 10, filters),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
+    enabled: options.enabled ?? true,
   });
 }

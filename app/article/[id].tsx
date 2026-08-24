@@ -1,11 +1,18 @@
-import { useLocalSearchParams } from 'expo-router';
-import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useArticle } from '../../src/hooks/useArticle';
+import { useFilterStore } from '../../src/store/filterStore';
 
 export default function ArticleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: article, isLoading, isError } = useArticle(id);
+  const setTag = useFilterStore((s) => s.setTag);
+
+  function handleTagPress(tag: string) {
+    setTag(tag);
+    router.push('/(tabs)/home');
+  }
 
   if (isLoading) {
     return (
@@ -61,9 +68,13 @@ export default function ArticleDetailScreen() {
         {article.tags.length > 0 ? (
           <View className="mb-6 flex-row flex-wrap">
             {article.tags.map((tag) => (
-              <View key={tag} className="mb-2 mr-2 rounded-full bg-gray-100 px-3 py-1">
+              <Pressable
+                key={tag}
+                onPress={() => handleTagPress(tag)}
+                className="mb-2 mr-2 rounded-full bg-gray-100 px-3 py-1"
+              >
                 <Text className="text-xs text-gray-600">#{tag}</Text>
-              </View>
+              </Pressable>
             ))}
           </View>
         ) : null}
