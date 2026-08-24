@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ArticleForm } from '../../../src/components/ArticleForm';
 import { ArticleInput } from '../../../src/api/articles';
@@ -15,25 +16,25 @@ export default function EditArticleScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-gray-900">
         <ActivityIndicator />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (isError || !article) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-6">
-        <Text className="text-gray-500">আর্টিকেল পাওয়া যায়নি</Text>
-      </View>
+      <SafeAreaView className="flex-1 items-center justify-center bg-white px-6 dark:bg-gray-900">
+        <Text className="text-gray-500 dark:text-gray-400">আর্টিকেল পাওয়া যায়নি</Text>
+      </SafeAreaView>
     );
   }
 
   if (article.author.id !== user?.id) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-6">
-        <Text className="text-gray-500">শুধু নিজের আর্টিকেল এডিট করা যায়</Text>
-      </View>
+      <SafeAreaView className="flex-1 items-center justify-center bg-white px-6 dark:bg-gray-900">
+        <Text className="text-gray-500 dark:text-gray-400">শুধু নিজের আর্টিকেল এডিট করা যায়</Text>
+      </SafeAreaView>
     );
   }
 
@@ -43,16 +44,18 @@ export default function EditArticleScreen() {
   }
 
   return (
-    <ArticleForm
-      submitLabel="Save Changes"
-      initialValues={{
-        title: article.title,
-        content: article.content,
-        category: article.category,
-        tags: article.tags,
-        coverImage: article.coverImage,
-      }}
-      onSubmit={handleSubmit}
-    />
+    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+      <ArticleForm
+        submitLabel="Save Changes"
+        initialValues={{
+          title: article.title,
+          content: article.content,
+          category: article.category,
+          tags: article.tags,
+          coverImage: article.coverImage,
+        }}
+        onSubmit={handleSubmit}
+      />
+    </SafeAreaView>
   );
 }

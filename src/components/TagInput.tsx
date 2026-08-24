@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+
+import { ThemedTextInput } from './ThemedTextInput';
 
 interface Props {
   tags: string[];
@@ -25,13 +27,12 @@ export function TagInput({ tags, onChange }: Props) {
 
   return (
     <View>
-      <TextInput
+      <ThemedTextInput
         value={draft}
         onChangeText={setDraft}
         onSubmitEditing={commitDraft}
         placeholder="ট্যাগ লিখে Enter চাপো (যেমন: react-native)"
         autoCapitalize="none"
-        className="rounded-lg border border-gray-300 px-4 py-3"
       />
       {tags.length > 0 ? (
         <View className="mt-2 flex-row flex-wrap">
@@ -39,9 +40,9 @@ export function TagInput({ tags, onChange }: Props) {
             <Pressable
               key={tag}
               onPress={() => removeTag(tag)}
-              className="mb-2 mr-2 flex-row items-center rounded-full bg-gray-100 px-3 py-1"
+              className="mb-2 mr-2 flex-row items-center rounded-full bg-gray-100 px-3 py-1 dark:bg-gray-800"
             >
-              <Text className="text-xs text-gray-600">#{tag} ✕</Text>
+              <Text className="text-xs text-gray-600 dark:text-gray-400">#{tag} ✕</Text>
             </Pressable>
           ))}
         </View>

@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GoogleSignInButton } from '../../src/components/GoogleSignInButton';
+import { ThemedTextInput } from '../../src/components/ThemedTextInput';
 import { useAuth } from '../../src/context/AuthContext';
 
 export default function LoginScreen() {
@@ -30,29 +31,31 @@ export default function LoginScreen() {
   }
 
   return (
-    <View className="flex-1 justify-center bg-white px-6">
-      <Text className="mb-8 text-center text-3xl font-bold text-gray-900">WriteWave</Text>
+    <SafeAreaView className="flex-1 justify-center bg-white px-6 dark:bg-gray-900">
+      <Text className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-gray-100">
+        WriteWave
+      </Text>
 
-      <Text className="mb-1 text-sm text-gray-600">Email</Text>
-      <TextInput
+      <Text className="mb-1 text-sm text-gray-600 dark:text-gray-400">Email</Text>
+      <ThemedTextInput
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
         placeholder="you@example.com"
-        className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+        className="mb-4"
       />
 
-      <Text className="mb-1 text-sm text-gray-600">Password</Text>
-      <TextInput
+      <Text className="mb-1 text-sm text-gray-600 dark:text-gray-400">Password</Text>
+      <ThemedTextInput
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         placeholder="••••••••"
-        className="mb-2 rounded-lg border border-gray-300 px-4 py-3"
+        className="mb-2"
       />
 
-      {error ? <Text className="mb-2 text-red-500">{error}</Text> : null}
+      {error ? <Text className="mb-2 text-red-500 dark:text-red-400">{error}</Text> : null}
 
       <Pressable
         onPress={handleLogin}
@@ -66,11 +69,9 @@ export default function LoginScreen() {
         )}
       </Pressable>
 
-      <GoogleSignInButton />
-
-      <Link href="/(auth)/register" className="mt-6 text-center text-blue-600">
+      <Link href="/(auth)/register" className="mt-6 text-center text-blue-600 dark:text-blue-400">
         অ্যাকাউন্ট নেই? Register করুন
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }

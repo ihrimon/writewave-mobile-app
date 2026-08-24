@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ArticleForm } from '../../src/components/ArticleForm';
 import { ArticleInput } from '../../src/api/articles';
@@ -12,5 +13,9 @@ export default function CreateArticleScreen() {
     router.replace(`/article/${article.id}`);
   }
 
-  return <ArticleForm submitLabel="Publish" onSubmit={handleSubmit} />;
+  return (
+    <SafeAreaView edges={['top']} className="flex-1 bg-white dark:bg-gray-900">
+      <ArticleForm submitLabel="Publish" onSubmit={handleSubmit} />
+    </SafeAreaView>
+  );
 }

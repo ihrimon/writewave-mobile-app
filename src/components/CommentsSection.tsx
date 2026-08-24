@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { CommentItem } from './CommentItem';
+import { ThemedTextInput } from './ThemedTextInput';
 import { useComments } from '../hooks/useComments';
 import { useCreateComment } from '../hooks/useCreateComment';
 
@@ -13,7 +14,8 @@ interface Props {
 // বাইরের ScrollView-এর ভেতরে) FlatList ব্যবহার না করে সরাসরি .map() + "আরও দেখাও" বাটন।
 export function CommentsSection({ articleId }: Props) {
   const [draft, setDraft] = useState('');
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const [postError, setPostError] = useState<string | null>(null);
+  const { data, isLoading, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useComments(articleId);
   const { mutateAsync, isPending } = useCreateComment(articleId);
 
@@ -22,22 +24,28 @@ export function CommentsSection({ articleId }: Props) {
   async function handleSubmit() {
     const text = draft.trim();
     if (!text) return;
-    setDraft('');
-    await mutateAsync(text);
+    setPostError(null);
+    try {
+      // সফল হওয়ার আগে draft ক্লিয়ার করা হয় না — ব্যর্থ হলে ইউজারের লেখা টেক্সট হারিয়ে যাবে না
+      await mutateAsync(text);
+      setDraft('');
+    } catch {
+      setPostError('মন্তব্য পোস্ট করতে সমস্যা হয়েছে, আবার চেষ্টা করো');
+    }
   }
 
   return (
     <View className="mt-2">
-      <Text className="mb-4 text-lg font-semibold text-gray-900">
+      <Text className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
         মন্তব্য{comments.length > 0 ? ` (${comments.length})` : ''}
       </Text>
 
-      <View className="mb-6 flex-row items-center">
-        <TextInput
+      <View className="mb-2 flex-row items-center">
+        <ThemedTextInput
           value={draft}
           onChangeText={setDraft}
           placeholder="একটা মন্তব্য লেখো..."
-          className="mr-2 flex-1 rounded-lg border border-gray-300 px-4 py-3"
+          className="mr-2 flex-1"
         />
         <Pressable
           onPress={handleSubmit}
@@ -52,10 +60,27 @@ export function CommentsSection({ articleId }: Props) {
         </Pressable>
       </View>
 
+      {postError ? (
+        <Text className="mb-4 text-sm text-red-500 dark:text-red-400">{postError}</Text>
+      ) : (
+        <View className="mb-4" />
+      )}
+
       {isLoading ? (
         <ActivityIndicator />
+      ) : isError ? (
+        <View className="items-center py-4">
+          <Text className="mb-2 text-gray-400 dark:text-gray-500">
+            মন্তব্য লোড করতে সমস্যা হয়েছে
+          </Text>
+          <Text onPress={() => refetch()} className="font-medium text-blue-600 dark:text-blue-400">
+            আবার চেষ্টা করো
+          </Text>
+        </View>
       ) : comments.length === 0 ? (
-        <Text className="text-gray-400">এখনো কোনো মন্তব্য নেই — প্রথম মন্তব্যটা তোমার হোক</Text>
+        <Text className="text-gray-400 dark:text-gray-500">
+          এখনো কোনো মন্তব্য নেই — প্রথম মন্তব্যটা তোমার হোক
+        </Text>
       ) : (
         comments.map((comment) => <CommentItem key={comment.id} comment={comment} />)
       )}
@@ -69,7 +94,7 @@ export function CommentsSection({ articleId }: Props) {
           {isFetchingNextPage ? (
             <ActivityIndicator />
           ) : (
-            <Text className="text-blue-600">আরও মন্তব্য দেখাও</Text>
+            <Text className="text-blue-600 dark:text-blue-400">আরও মন্তব্য দেখাও</Text>
           )}
         </Pressable>
       ) : null}

@@ -21,10 +21,16 @@ export function CategoryPicker({ value, onChange }: Props) {
             key={category}
             onPress={() => onChange(category)}
             className={`rounded-full border px-4 py-2 ${
-              isActive ? 'border-blue-600 bg-blue-600' : 'border-gray-300 bg-white'
+              isActive
+                ? 'border-blue-600 bg-blue-600 dark:border-blue-500 dark:bg-blue-500'
+                : 'border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800'
             }`}
           >
-            <Text className={isActive ? 'font-medium text-white' : 'text-gray-700'}>
+            <Text
+              className={
+                isActive ? 'font-medium text-white' : 'text-gray-700 dark:text-gray-300'
+              }
+            >
               {category}
             </Text>
           </Pressable>

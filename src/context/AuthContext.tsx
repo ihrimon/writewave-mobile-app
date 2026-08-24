@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
-import { googleLoginRequest, loginRequest, meRequest, registerRequest } from '../api/auth';
+import { loginRequest, meRequest, registerRequest } from '../api/auth';
 import { AUTH_TOKEN_KEY } from '../api/client';
 import { User } from '../types';
 
@@ -10,7 +10,6 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
-  loginWithGoogle: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -55,18 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await persistSession(token, authedUser);
   }
 
-  async function loginWithGoogle(idToken: string) {
-    const { token, user: authedUser } = await googleLoginRequest(idToken);
-    await persistSession(token, authedUser);
-  }
-
   async function logout() {
     await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

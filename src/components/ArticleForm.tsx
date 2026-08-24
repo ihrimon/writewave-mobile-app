@@ -1,12 +1,13 @@
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { uploadImageToCloudinary } from '../api/cloudinary';
 import { ArticleInput } from '../api/articles';
 import { CategoryPicker } from './CategoryPicker';
 import { TagInput } from './TagInput';
+import { ThemedTextInput } from './ThemedTextInput';
 
 interface Props {
   initialValues?: Partial<ArticleInput>;
@@ -80,50 +81,50 @@ export function ArticleForm({ initialValues, onSubmit, submitLabel }: Props) {
   const isValid = title.trim().length >= 3 && content.trim().length >= 10 && Boolean(category);
 
   return (
-    <ScrollView className="flex-1 bg-white" contentContainerClassName="p-4 pb-10">
-      <Text className="mb-1 text-sm text-gray-600">Cover Image</Text>
+    <ScrollView className="flex-1 bg-white dark:bg-gray-900" contentContainerClassName="p-4 pb-10">
+      <Text className="mb-1 text-sm text-gray-600 dark:text-gray-400">Cover Image</Text>
       <Pressable
         onPress={handlePickImage}
-        className="mb-4 h-40 items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-300 bg-gray-50"
+        className="mb-4 h-40 items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-800"
       >
         {isUploadingImage ? (
           <ActivityIndicator />
         ) : coverImage ? (
           <Image source={{ uri: coverImage }} className="h-full w-full" resizeMode="cover" />
         ) : (
-          <Text className="text-gray-400">ছবি বেছে নিতে ট্যাপ করো</Text>
+          <Text className="text-gray-400 dark:text-gray-500">ছবি বেছে নিতে ট্যাপ করো</Text>
         )}
       </Pressable>
 
-      <Text className="mb-1 text-sm text-gray-600">Title</Text>
-      <TextInput
+      <Text className="mb-1 text-sm text-gray-600 dark:text-gray-400">Title</Text>
+      <ThemedTextInput
         value={title}
         onChangeText={setTitle}
         placeholder="আর্টিকেলের শিরোনাম"
-        className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+        className="mb-4"
       />
 
-      <Text className="mb-1 text-sm text-gray-600">Category</Text>
+      <Text className="mb-1 text-sm text-gray-600 dark:text-gray-400">Category</Text>
       <View className="mb-4">
         <CategoryPicker value={category} onChange={setCategory} />
       </View>
 
-      <Text className="mb-1 text-sm text-gray-600">Tags</Text>
+      <Text className="mb-1 text-sm text-gray-600 dark:text-gray-400">Tags</Text>
       <View className="mb-4">
         <TagInput tags={tags} onChange={setTags} />
       </View>
 
-      <Text className="mb-1 text-sm text-gray-600">Content</Text>
-      <TextInput
+      <Text className="mb-1 text-sm text-gray-600 dark:text-gray-400">Content</Text>
+      <ThemedTextInput
         value={content}
         onChangeText={setContent}
         placeholder="তোমার আর্টিকেল লেখো..."
         multiline
         textAlignVertical="top"
-        className="mb-4 min-h-[160px] rounded-lg border border-gray-300 px-4 py-3"
+        className="mb-4 min-h-[160px]"
       />
 
-      {error ? <Text className="mb-4 text-red-500">{error}</Text> : null}
+      {error ? <Text className="mb-4 text-red-500 dark:text-red-400">{error}</Text> : null}
 
       <Pressable
         onPress={handleSubmit}

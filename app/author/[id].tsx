@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { ActivityIndicator, FlatList, Image, Pressable, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ArticleCard } from '../../src/components/ArticleCard';
 import { useAuth } from '../../src/context/AuthContext';
@@ -18,6 +19,8 @@ export default function AuthorProfileScreen() {
   const {
     data,
     isLoading: isArticlesLoading,
+    isError: isArticlesError,
+    refetch: refetchArticles,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -33,17 +36,17 @@ export default function AuthorProfileScreen() {
 
   if (isAuthorLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-gray-900">
         <ActivityIndicator />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (isAuthorError || !author) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-6">
-        <Text className="text-gray-500">প্রোফাইল পাওয়া যায়নি</Text>
-      </View>
+      <SafeAreaView className="flex-1 items-center justify-center bg-white px-6 dark:bg-gray-900">
+        <Text className="text-gray-500 dark:text-gray-400">প্রোফাইল পাওয়া যায়নি</Text>
+      </SafeAreaView>
     );
   }
 
@@ -52,31 +55,41 @@ export default function AuthorProfileScreen() {
   // Home screen-এর মতো এখানেও FlatList-এর contentContainerClassName="p-4" cards-এর জন্য
   // দরকার, তাই header-কে negative margin দিয়ে full-bleed করা হয়েছে।
   const header = (
-    <View className="-mx-4 -mt-4 mb-2 items-center border-b border-gray-100 px-6 py-8">
+    <View className="-mx-4 -mt-4 mb-2 items-center border-b border-gray-100 px-6 py-8 dark:border-gray-800">
       {author.avatarUrl ? (
         <Image source={{ uri: author.avatarUrl }} className="mb-3 h-20 w-20 rounded-full" />
       ) : (
-        <View className="mb-3 h-20 w-20 items-center justify-center rounded-full bg-gray-200">
-          <Text className="text-2xl font-semibold text-gray-500">
+        <View className="mb-3 h-20 w-20 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
+          <Text className="text-2xl font-semibold text-gray-500 dark:text-gray-300">
             {author.name.charAt(0).toUpperCase()}
           </Text>
         </View>
       )}
-      <Text className="mb-1 text-xl font-bold text-gray-900">{author.name}</Text>
-      {author.bio ? <Text className="mb-4 text-center text-gray-500">{author.bio}</Text> : null}
+      <Text className="mb-1 text-xl font-bold text-gray-900 dark:text-gray-100">
+        {author.name}
+      </Text>
+      {author.bio ? (
+        <Text className="mb-4 text-center text-gray-500 dark:text-gray-400">{author.bio}</Text>
+      ) : null}
 
       <View className="mb-4 flex-row gap-6">
         <View className="items-center">
-          <Text className="text-lg font-semibold text-gray-900">{author.articleCount}</Text>
-          <Text className="text-xs text-gray-400">আর্টিকেল</Text>
+          <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {author.articleCount}
+          </Text>
+          <Text className="text-xs text-gray-400 dark:text-gray-500">আর্টিকেল</Text>
         </View>
         <View className="items-center">
-          <Text className="text-lg font-semibold text-gray-900">{author.followerCount}</Text>
-          <Text className="text-xs text-gray-400">ফলোয়ার</Text>
+          <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {author.followerCount}
+          </Text>
+          <Text className="text-xs text-gray-400 dark:text-gray-500">ফলোয়ার</Text>
         </View>
         <View className="items-center">
-          <Text className="text-lg font-semibold text-gray-900">{author.followingCount}</Text>
-          <Text className="text-xs text-gray-400">ফলোয়িং</Text>
+          <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {author.followingCount}
+          </Text>
+          <Text className="text-xs text-gray-400 dark:text-gray-500">ফলোয়িং</Text>
         </View>
       </View>
 
@@ -85,11 +98,17 @@ export default function AuthorProfileScreen() {
           onPress={() => toggleFollow()}
           disabled={isFollowPending}
           className={`rounded-lg px-6 py-2 ${
-            author.isFollowedByMe ? 'border border-gray-300' : 'bg-blue-600'
+            author.isFollowedByMe
+              ? 'border border-gray-300 dark:border-gray-600'
+              : 'bg-blue-600'
           }`}
         >
           <Text
-            className={author.isFollowedByMe ? 'font-medium text-gray-700' : 'font-medium text-white'}
+            className={
+              author.isFollowedByMe
+                ? 'font-medium text-gray-700 dark:text-gray-300'
+                : 'font-medium text-white'
+            }
           >
             {author.isFollowedByMe ? 'Following' : 'Follow'}
           </Text>
@@ -99,33 +118,49 @@ export default function AuthorProfileScreen() {
   );
 
   return (
-    <FlatList
-      data={articles}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <ArticleCard article={item} />}
-      ListHeaderComponent={header}
-      contentContainerClassName="p-4"
-      className="flex-1 bg-white"
-      onEndReached={handleEndReached}
-      onEndReachedThreshold={0.5}
-      ListEmptyComponent={
-        isArticlesLoading ? (
-          <View className="mt-8 items-center">
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <View className="items-center justify-center py-10">
-            <Text className="text-gray-400">এখনো কোনো আর্টিকেল প্রকাশ করা হয়নি</Text>
-          </View>
-        )
-      }
-      ListFooterComponent={
-        isFetchingNextPage ? (
-          <View className="py-4">
-            <ActivityIndicator />
-          </View>
-        ) : null
-      }
-    />
+    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+      <FlatList
+        data={articles}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <ArticleCard article={item} />}
+        ListHeaderComponent={header}
+        contentContainerClassName="p-4"
+        className="flex-1"
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListEmptyComponent={
+          isArticlesLoading ? (
+            <View className="mt-8 items-center">
+              <ActivityIndicator />
+            </View>
+          ) : isArticlesError ? (
+            <View className="mt-8 items-center">
+              <Text className="mb-2 text-gray-400 dark:text-gray-500">
+                আর্টিকেল লোড করতে সমস্যা হয়েছে
+              </Text>
+              <Text
+                onPress={() => refetchArticles()}
+                className="font-medium text-blue-600 dark:text-blue-400"
+              >
+                আবার চেষ্টা করো
+              </Text>
+            </View>
+          ) : (
+            <View className="items-center justify-center py-10">
+              <Text className="text-gray-400 dark:text-gray-500">
+                এখনো কোনো আর্টিকেল প্রকাশ করা হয়নি
+              </Text>
+            </View>
+          )
+        }
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <View className="py-4">
+              <ActivityIndicator />
+            </View>
+          ) : null
+        }
+      />
+    </SafeAreaView>
   );
 }

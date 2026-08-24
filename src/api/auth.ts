@@ -19,11 +19,6 @@ export async function loginRequest(email: string, password: string): Promise<Aut
   return data;
 }
 
-export async function googleLoginRequest(idToken: string): Promise<AuthResponse> {
-  const { data } = await apiClient.post<AuthResponse>('/auth/google', { idToken });
-  return data;
-}
-
 export async function meRequest(): Promise<User> {
   const { data } = await apiClient.get<{ user: User }>('/auth/me');
   return data.user;

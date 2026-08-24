@@ -2,7 +2,6 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  authProvider: 'manual' | 'google';
   avatarUrl?: string;
   bio?: string;
 }
