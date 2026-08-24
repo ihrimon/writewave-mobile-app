@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useAuth } from '../../src/context/AuthContext';
 import { useArticle } from '../../src/hooks/useArticle';
 import { useFilterStore } from '../../src/store/filterStore';
 
@@ -8,6 +9,7 @@ export default function ArticleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: article, isLoading, isError } = useArticle(id);
   const setTag = useFilterStore((s) => s.setTag);
+  const { user } = useAuth();
 
   function handleTagPress(tag: string) {
     setTag(tag);
@@ -40,7 +42,17 @@ export default function ArticleDetailScreen() {
         <Text className="mb-2 text-xs font-medium uppercase text-blue-600">
           {article.category}
         </Text>
-        <Text className="mb-4 text-2xl font-bold text-gray-900">{article.title}</Text>
+        <View className="mb-4 flex-row items-start justify-between">
+          <Text className="mr-3 flex-1 text-2xl font-bold text-gray-900">{article.title}</Text>
+          {user?.id === article.author.id ? (
+            <Pressable
+              onPress={() => router.push(`/article/edit/${article.id}`)}
+              className="rounded-lg border border-gray-300 px-3 py-1.5"
+            >
+              <Text className="text-sm font-medium text-gray-700">Edit</Text>
+            </Pressable>
+          ) : null}
+        </View>
 
         <View className="mb-6 flex-row items-center">
           {article.author.avatarUrl ? (

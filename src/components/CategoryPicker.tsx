@@ -1,0 +1,35 @@
+import { Pressable, ScrollView, Text } from 'react-native';
+
+const CATEGORIES = ['Technology', 'Sports', 'Politics', 'Health'];
+
+interface Props {
+  value: string | null;
+  onChange: (category: string) => void;
+}
+
+export function CategoryPicker({ value, onChange }: Props) {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerClassName="flex-row items-center gap-2"
+    >
+      {CATEGORIES.map((category) => {
+        const isActive = value === category;
+        return (
+          <Pressable
+            key={category}
+            onPress={() => onChange(category)}
+            className={`rounded-full border px-4 py-2 ${
+              isActive ? 'border-blue-600 bg-blue-600' : 'border-gray-300 bg-white'
+            }`}
+          >
+            <Text className={isActive ? 'font-medium text-white' : 'text-gray-700'}>
+              {category}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}

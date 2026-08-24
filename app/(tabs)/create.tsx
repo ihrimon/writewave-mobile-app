@@ -1,9 +1,16 @@
-import { Text, View } from 'react-native';
+import { router } from 'expo-router';
+
+import { ArticleForm } from '../../src/components/ArticleForm';
+import { ArticleInput } from '../../src/api/articles';
+import { useCreateArticle } from '../../src/hooks/useCreateArticle';
 
 export default function CreateArticleScreen() {
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-lg text-gray-700">Create/Edit Article — Phase 5-এ implement হবে</Text>
-    </View>
-  );
+  const { mutateAsync } = useCreateArticle();
+
+  async function handleSubmit(values: ArticleInput) {
+    const article = await mutateAsync(values);
+    router.replace(`/article/${article.id}`);
+  }
+
+  return <ArticleForm submitLabel="Publish" onSubmit={handleSubmit} />;
 }
