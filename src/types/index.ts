@@ -32,7 +32,7 @@ export interface ArticleListResponse {
   hasMore: boolean;
 }
 
-// GET /api/articles/:id-এর শেপ — পুরো content, author.bio-সহ।
+// GET /api/articles/:id-এর শেপ — পুরো content, author.bio, ও isLiked (auth থাকলে)-সহ।
 export interface ArticleDetail {
   id: string;
   title: string;
@@ -43,14 +43,31 @@ export interface ArticleDetail {
   likeCount: number;
   createdAt: string;
   author: ArticleAuthor & { bio?: string };
+  isLiked: boolean;
 }
 
 export interface Comment {
   id: string;
-  articleId: string;
-  authorId: string;
   text: string;
   createdAt: string;
+  author: ArticleAuthor;
+}
+
+export interface CommentListResponse {
+  comments: Comment[];
+  page: number;
+  hasMore: boolean;
+}
+
+export interface AuthorProfile {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  bio?: string;
+  articleCount: number;
+  followerCount: number;
+  followingCount: number;
+  isFollowedByMe: boolean;
 }
 
 export interface AuthResponse {

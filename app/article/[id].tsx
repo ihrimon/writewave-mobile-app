@@ -1,8 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { CommentsSection } from '../../src/components/CommentsSection';
 import { useAuth } from '../../src/context/AuthContext';
 import { useArticle } from '../../src/hooks/useArticle';
+import { useLikeArticle } from '../../src/hooks/useLikeArticle';
 import { useFilterStore } from '../../src/store/filterStore';
 
 export default function ArticleDetailScreen() {
@@ -10,6 +12,7 @@ export default function ArticleDetailScreen() {
   const { data: article, isLoading, isError } = useArticle(id);
   const setTag = useFilterStore((s) => s.setTag);
   const { user } = useAuth();
+  const { mutate: toggleLike } = useLikeArticle(id);
 
   function handleTagPress(tag: string) {
     setTag(tag);
@@ -54,7 +57,10 @@ export default function ArticleDetailScreen() {
           ) : null}
         </View>
 
-        <View className="mb-6 flex-row items-center">
+        <Pressable
+          onPress={() => router.push(`/author/${article.author.id}`)}
+          className="mb-6 flex-row items-center"
+        >
           {article.author.avatarUrl ? (
             <Image
               source={{ uri: article.author.avatarUrl }}
@@ -73,7 +79,7 @@ export default function ArticleDetailScreen() {
               {new Date(article.createdAt).toLocaleDateString()}
             </Text>
           </View>
-        </View>
+        </Pressable>
 
         <Text className="mb-6 text-base leading-6 text-gray-800">{article.content}</Text>
 
@@ -91,7 +97,16 @@ export default function ArticleDetailScreen() {
           </View>
         ) : null}
 
-        <Text className="text-sm text-gray-400">♥ {article.likeCount}</Text>
+        <Pressable
+          onPress={() => toggleLike()}
+          className="mb-8 flex-row items-center self-start rounded-full border border-gray-200 px-4 py-2"
+        >
+          <Text className={article.isLiked ? 'text-red-500' : 'text-gray-500'}>
+            {article.isLiked ? '♥' : '♡'} {article.likeCount}
+          </Text>
+        </Pressable>
+
+        <CommentsSection articleId={article.id} />
       </View>
     </ScrollView>
   );

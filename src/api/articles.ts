@@ -5,6 +5,7 @@ export interface ArticleFilters {
   category?: string;
   tag?: string;
   search?: string;
+  authorId?: string;
 }
 
 export async function listArticlesRequest(
@@ -42,4 +43,14 @@ export async function updateArticleRequest(
 ): Promise<ArticleDetail> {
   const { data } = await apiClient.put<{ article: ArticleDetail }>(`/articles/${id}`, input);
   return data.article;
+}
+
+export interface LikeResponse {
+  liked: boolean;
+  likeCount: number;
+}
+
+export async function likeArticleRequest(id: string): Promise<LikeResponse> {
+  const { data } = await apiClient.post<LikeResponse>(`/articles/${id}/like`);
+  return data;
 }
